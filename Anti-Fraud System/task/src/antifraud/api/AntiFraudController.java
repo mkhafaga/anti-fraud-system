@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 @RestController
-@RequestMapping("/antifraud")
+@RequestMapping("/api/antifraud")
 public class AntiFraudController {
 
     private final TransactionService transactionService;
