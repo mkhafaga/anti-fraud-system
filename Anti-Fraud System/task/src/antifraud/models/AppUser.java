@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "AppUsers")
-@JsonIgnoreProperties(value = {"password", "authority"})
+@JsonIgnoreProperties(value = {"password", "locked"})
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +21,10 @@ public class AppUser {
     private String username;
     @Column(nullable = false)
     private String password;
-    private String authority;
+
+    private String role;
+
+    private boolean locked;
 
     public long getId() {
         return id;
@@ -55,11 +58,19 @@ public class AppUser {
         this.password = password;
     }
 
-    public String getAuthority() {
-        return authority;
+    public String getRole() {
+        return role;
     }
 
-    public void setAuthority(String authority) {
-        this.authority = authority;
+    public void setRole(String authority) {
+        this.role = authority;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 }

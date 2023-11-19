@@ -1,8 +1,11 @@
 package antifraud.api;
 
+import antifraud.exceptions.NoChangeException;
 import antifraud.exceptions.UserNotFoundException;
 import antifraud.models.AppUser;
 import antifraud.models.Registration;
+import antifraud.models.UserAccess;
+import antifraud.models.UserRole;
 import antifraud.services.UserService;
 import jakarta.validation.Valid;
 import java.util.LinkedHashMap;
@@ -17,8 +20,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
@@ -53,6 +58,20 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/role")
+    public ResponseEntity<AppUser> updateRole(@RequestBody UserRole userRole) {
+        AppUser user = userService.updateRole(userRole);
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/access")
+    public ResponseEntity<Map<String, String>> updateAccess(@RequestBody UserAccess userAccess) {
+        userService.updateAccess(userAccess);
+        Map<String, String> response = new LinkedHashMap<>();
+        response.put("status", "User %s %s!".formatted(userAccess.username(), userAccess.operation() + "ed"));
+        return ResponseEntity.ok(response);
+    }
+
     @ExceptionHandler(value = JdbcSQLIntegrityConstraintViolationException.class)
     public ResponseEntity<Map<String, String>> handleJdbcSQLIntegrityConstraintViolationException(
             JdbcSQLIntegrityConstraintViolationException e, WebRequest request) {
@@ -63,8 +82,9 @@ public class UserController {
 
     @ExceptionHandler(value = {
             PropertyValueException.class,
-            MethodArgumentNotValidException.class
-           })
+            MethodArgumentNotValidException.class,
+            IllegalArgumentException.class
+    })
     public ResponseEntity handlePropertyValueException(Exception e, WebRequest request) {
         return ResponseEntity.badRequest().build();
     }
@@ -74,5 +94,10 @@ public class UserController {
         Map<String, String> response = new LinkedHashMap<>();
         response.put("message", e.getMessage());
         return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ExceptionHandler(NoChangeException.class)
+    public void handleNoChangeException(NoChangeException e, WebRequest request) {
     }
 }
