@@ -2,7 +2,7 @@ package antifraud.services;
 
 import antifraud.database.AppUserRepository;
 import antifraud.exceptions.NoChangeException;
-import antifraud.exceptions.UserNotFoundException;
+import antifraud.exceptions.NotFoundException;
 import antifraud.models.AppUser;
 import antifraud.models.LockStatus;
 import antifraud.models.Registration;
@@ -45,14 +45,14 @@ public class UserService {
     public void deleteUser(String username) {
         AppUser user =
                 userRepository.findAppUserByUsernameIgnoreCase(username)
-                        .orElseThrow(() -> new UserNotFoundException("User not found"));
+                        .orElseThrow(() -> new NotFoundException("User not found"));
         userRepository.delete(user);
     }
 
     public AppUser updateRole(UserRole userRole) {
         AppUser user =
                 userRepository.findAppUserByUsername(userRole.username())
-                        .orElseThrow(() -> new UserNotFoundException("User not found"));
+                        .orElseThrow(() -> new NotFoundException("User not found"));
         String validRole = userRole.role();
         if (!(validRole.equals("MERCHANT") || validRole.equals("SUPPORT"))) {
             throw new IllegalArgumentException();
@@ -67,7 +67,7 @@ public class UserService {
     public void updateAccess(UserAccess userAccess) {
         AppUser user =
                 userRepository.findAppUserByUsername(userAccess.username())
-                        .orElseThrow(() -> new UserNotFoundException("User not found"));
+                        .orElseThrow(() -> new NotFoundException("User not found"));
         boolean locked = false;
         if (userAccess.operation() == LockStatus.LOCK) {
             locked = true;
