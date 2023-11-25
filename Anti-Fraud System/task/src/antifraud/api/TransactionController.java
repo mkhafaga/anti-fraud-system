@@ -1,8 +1,7 @@
 package antifraud.api;
 
-import antifraud.models.TransactionRequest;
+import antifraud.requests.TransactionRequest;
 import antifraud.models.TransactionResponse;
-import antifraud.models.TransactionStatus;
 import antifraud.services.CardService;
 import antifraud.services.SuspiciousIpService;
 import antifraud.services.TransactionService;
@@ -32,41 +31,10 @@ public class TransactionController {
 
     @PostMapping("/transaction")
     public ResponseEntity<TransactionResponse> validateTransaction(@RequestBody @Valid TransactionRequest request) {
-        TransactionStatus transactionStatus = transactionService.checkTransaction(request.amount());
         boolean validIp = suspiciousIpService.validateIp(request.ip());
         boolean validCardNumber = cardService.validateCardNumber(request.number());
-        TransactionResponse response = new TransactionResponse();
-        StringBuffer info = new StringBuffer();
-        boolean isAllowed = transactionStatus == TransactionStatus.ALLOWED && validIp && validCardNumber;
-        if (isAllowed) {
-            return ResponseEntity.ok(response);
-        } else {
-            if (transactionStatus == TransactionStatus.PROHIBITED) {
-                info.append("amount");
-            }
-
-            if (!validCardNumber) {
-                if (!info.isEmpty())
-                    info.append(", ");
-                info.append("card-number");
-            }
-            if (!validIp) {
-                if (!info.isEmpty())
-                    info.append(", ");
-                info.append("ip");
-            }
-
-            if (!validIp || !validCardNumber)
-                transactionStatus = TransactionStatus.PROHIBITED;
-
-            if (info.isEmpty())
-                info.append("amount");
-
-        }
-
-        response.setResult(transactionStatus);
-        if (!info.isEmpty())
-            response.setInfo(info.toString());
+        TransactionResponse response = transactionService.checkTransaction(request, validIp, validCardNumber);
+        transactionService.saveTransaction(request);
         return ResponseEntity.ok(response);
     }
 

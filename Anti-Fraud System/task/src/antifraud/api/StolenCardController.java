@@ -1,6 +1,6 @@
 package antifraud.api;
 
-import antifraud.models.CardRequest;
+import antifraud.requests.CardRequest;
 import antifraud.models.StolenCard;
 import antifraud.services.CardService;
 import java.util.LinkedHashMap;

@@ -1,9 +1,9 @@
 package antifraud.api;
 
 import antifraud.models.AppUser;
-import antifraud.models.Registration;
-import antifraud.models.UserAccess;
-import antifraud.models.UserRole;
+import antifraud.requests.Registration;
+import antifraud.requests.UserAccess;
+import antifraud.requests.UserRole;
 import antifraud.services.UserService;
 import jakarta.validation.Valid;
 import java.util.LinkedHashMap;

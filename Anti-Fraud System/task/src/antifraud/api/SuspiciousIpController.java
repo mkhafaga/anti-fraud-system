@@ -1,6 +1,6 @@
 package antifraud.api;
 
-import antifraud.models.IpRequest;
+import antifraud.requests.IpRequest;
 import antifraud.models.SuspiciousIp;
 import antifraud.services.SuspiciousIpService;
 import java.util.LinkedHashMap;
