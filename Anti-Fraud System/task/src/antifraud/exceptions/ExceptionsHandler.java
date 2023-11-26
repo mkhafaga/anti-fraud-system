@@ -6,6 +6,7 @@ import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 import org.hibernate.PropertyValueException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,7 +27,13 @@ public class ExceptionsHandler {
     public void handleNoChangeException(NoChangeException e, WebRequest request) {
     }
 
-    @ExceptionHandler(value = NotFoundException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(WrongFeedbackException.class)
+    public void handleWrongFeedbackException(WrongFeedbackException e, WebRequest request){
+
+    }
+
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity handleUserNotFoundException(NotFoundException e, WebRequest request) {
         Map<String, String> response = new LinkedHashMap<>();
         response.put("message", e.getMessage());
@@ -36,7 +43,8 @@ public class ExceptionsHandler {
     @ExceptionHandler(value = {
             PropertyValueException.class,
             MethodArgumentNotValidException.class,
-            IllegalArgumentException.class
+            IllegalArgumentException.class,
+            HttpMessageNotReadableException.class
     })
     public ResponseEntity handlePropertyValueException(Exception e, WebRequest request) {
         return ResponseEntity.badRequest().build();

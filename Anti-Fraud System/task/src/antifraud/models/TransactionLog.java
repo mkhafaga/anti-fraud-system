@@ -1,6 +1,8 @@
 package antifraud.models;
 
 import antifraud.requests.TransactionRequest;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -10,21 +12,27 @@ import java.time.LocalDateTime;
 public class TransactionLog {
     @Id
     @GeneratedValue
+    @JsonProperty("transactionId")
     private long id;
     private int amount;
     private String ip;
     private String number;
     private Region region;
     private LocalDateTime date;
-
+    @JsonIgnore
     private String username;
 
-    public TransactionLog(TransactionRequest request, String username) {
+    private String result;
+    private String feedback;
+
+    public TransactionLog(TransactionRequest request, TransactionStatus transactionStatus, String username) {
         this.amount = request.amount();
         this.ip = request.ip();
         this.number = request.number();
         this.region = request.region();
         this.date = request.date();
+        this.result = transactionStatus.name();
+        this.feedback = "";
         this.username = username;
     }
 
@@ -78,5 +86,21 @@ public class TransactionLog {
 
     public void setUsername(String user) {
         this.username = user;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
     }
 }
